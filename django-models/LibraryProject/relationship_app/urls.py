@@ -6,6 +6,7 @@ urlpatterns = [
     path('books/', views.list_books, name='list_books'),
     path('libraries/<int:pk>/', views.LibraryDetailView.as_view(), name='library_detail'),
     path('', views.home, name='home'),
+    path('register/', views.register, name='register'),
 
     # Authentication URLs
     path('login/', LoginView.as_view(template_name='relationship_app/login.html'), name='login'),
