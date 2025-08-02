@@ -1,12 +1,12 @@
-from django.shortcuts import render, redirect
-from bookshelf.models import Book
+from django.shortcuts import render, redirect, get_object_or_404
+from bookshelf.models import Book, Author
 from .models import Library
 from django.views.generic import DetailView
 
 # For authentication
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 
 def home(request):
     return render(request, 'relationship_app/home.html')
@@ -75,3 +75,13 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
+
+
+# --- Book management views with permission checks ---
+
+@permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        author_id = request.POST.get('author')
+        author = get_object_o
