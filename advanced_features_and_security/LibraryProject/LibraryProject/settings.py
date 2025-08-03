@@ -22,10 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-bs5au_jevl5d=w7$k%e(b72ndm^kupde42mlbtp(zz_e*e=v9k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Set to False for production
+DEBUG = True
 
-# IMPORTANT: Set allowed hosts for production!
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -38,9 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bookshelf',
     'relationship_app',
-    'accounts',
-    # Add CSP for Content Security Policy
-    'csp',
+    
 ]
 
 MIDDLEWARE = [
@@ -51,8 +48,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Add CSP middleware for Content Security Policy
-    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -73,7 +68,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'LibraryProject.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -99,7 +93,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-               'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -124,55 +118,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Only this line should be present for checker compliance:
-AUTH_USER_MODEL = "bookshelf.CustomUser"
+# Custom user model
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
-# ========================
-# Security Best Practices
-# ========================
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-# Enables the browser's XSS filter
-SECURE_BROWSER_XSS_FILTER = True
-
-# Prevents the site from being loaded in an iframe (clickjacking protection)
-X_FRAME_OPTIONS = "DENY"
-
-# Prevents the browser from MIME-sniffing a response away from the declared content-type
-SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# Ensures CSRF and session cookies are only sent over HTTPS
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-
-# ===========================
-# HTTPS Enforcement and HSTS
-# ===========================
-
-# Redirect all HTTP requests to HTTPS for secure communication
-SECURE_SSL_REDIRECT = True  # Forces all non-HTTPS requests to redirect to HTTPS
-
-# HTTP Strict Transport Security (HSTS) settings
-SECURE_HSTS_SECONDS = 31536000  # Ensures browsers access the site over HTTPS for one year
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Applies HSTS to all subdomains
-SECURE_HSTS_PRELOAD = True  # Allows site to be included in browsers' HSTS preload list
-
-# ========================
-# Content Security Policy (CSP)
-# ========================
-# CSP middleware is enabled to reduce XSS risks by specifying trusted content sources.
-# See: https://github.com/mozilla/django-csp
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_SCRIPT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'",)
-CSP_IMG_SRC = ("'self'",)
-CSP_FONT_SRC = ("'self'",)
-CSP_CONNECT_SRC = ("'self'",)
-
-# ========================
-# Security documentation:
-# - CSRF and session cookies are only sent over HTTPS
-# - XSS and clickjacking protection enabled
-# - CSP headers restrict content sources to self (mitigates XSS)
-# - HTTPS enforced via SECURE_SSL_REDIRECT
-# - HSTS headers instruct browsers to only use HTTPS (including subdomains and preload)
-# ========================
+# Trust X-Forwarded-Proto header from proxy/load balancer for HTTPS detection
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
