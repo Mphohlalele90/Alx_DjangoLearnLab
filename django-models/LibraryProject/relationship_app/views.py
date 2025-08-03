@@ -50,9 +50,9 @@ def user_login(request):
             return render(request, 'relationship_app/login.html', {'error': error})
     return render(request, 'relationship_app/login.html')
 
-# Secure Book CRUD Views with Permissions
+# Secure Book CRUD Views with Custom Permissions
 
-@permission_required('bookshelf.add_book', raise_exception=True)
+@permission_required('bookshelf.can_add_book', raise_exception=True)
 def add_book(request):
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -63,7 +63,7 @@ def add_book(request):
     authors = Author.objects.all()
     return render(request, 'relationship_app/add_book.html', {'authors': authors})
 
-@permission_required('bookshelf.change_book', raise_exception=True)
+@permission_required('bookshelf.can_change_book', raise_exception=True)
 def edit_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
@@ -75,7 +75,7 @@ def edit_book(request, book_id):
     authors = Author.objects.all()
     return render(request, 'relationship_app/edit_book.html', {'book': book, 'authors': authors})
 
-@permission_required('bookshelf.delete_book', raise_exception=True)
+@permission_required('bookshelf.can_delete_book', raise_exception=True)
 def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
