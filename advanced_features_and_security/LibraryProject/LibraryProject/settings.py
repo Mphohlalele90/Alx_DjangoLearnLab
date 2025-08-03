@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -23,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-bs5au_jevl5d=w7$k%e(b72ndm^kupde42mlbtp(zz_e*e=v9k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False  # Set to False for production
 
-ALLOWED_HOSTS = []
-
+# IMPORTANT: Set allowed hosts for production!
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -40,6 +39,8 @@ INSTALLED_APPS = [
     'bookshelf',
     'relationship_app',
     'accounts',
+    # Add CSP for Content Security Policy
+    'csp',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Add CSP middleware for Content Security Policy
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -82,7 +85,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -101,7 +103,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -112,7 +113,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
@@ -126,3 +126,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Only this line should be present for checker compliance:
 AUTH_USER_MODEL = "bookshelf.CustomUser"
+
+# ========================
+# Security Best Practices
+# ========================
+
+# Enables the browser's XSS filter
+SECURE_BROWSER_XSS_FILTER = True
+
+# Prevents the site from being loaded in an iframe (clickjacking protection)
+X_FRAME_OPTIONS = "DENY"
+
+# Prevents the browser from MIME-sniffing a response away from the declared content-type
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Ensures CSRF and session cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# ========================
+# Content Security Policy (CSP)
+# ========================
+# CSP middleware is enabled to reduce XSS risks by specifying trusted content sources.
+# See: https://github.com/mozilla/django-csp
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'",)
+CSP_CONNECT_SRC = ("'self'",)
+
+# ========================
+# Security documentation:
+# - CSRF and session cookies are only sent over HTTPS
+# - XSS and clickjacking protection enabled
+# - CSP headers restrict content sources to self (mitigates XSS)
+# ========================
