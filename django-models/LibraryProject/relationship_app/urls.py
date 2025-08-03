@@ -15,7 +15,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name='relationship_app/login.html'), name='login'),
     path('logout/', LogoutView.as_view(template_name='relationship_app/logout.html'), name='logout'),
 
-    # Checker expects these URL patterns:
+    # Book management URLs with permission checks
     path('add_book/', add_book, name='add_book'),
     path('edit_book/<int:book_id>/', edit_book, name='edit_book'),
     path('delete_book/<int:book_id>/', delete_book, name='delete_book'),
