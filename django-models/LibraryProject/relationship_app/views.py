@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from bookshelf.models import Book, Author
 from .models import Library
-from django.views.generic import DetailView
+from django.views.generic.detail import DetailView
 
 # Authentication imports
 from django.contrib.auth import login, logout, authenticate
@@ -48,3 +48,37 @@ def user_login(request):
         else:
             error = "Invalid username or password."
             return render(request, 'relationship_app/login.html', {'error': error})
+    return render(request, 'relationship_app/login.html')
+
+# Secure Book CRUD Views with Permissions
+
+@permission_required('bookshelf.add_book', raise_exception=True)
+def add_book(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        author_id = request.POST.get('author')
+        author = get_object_or_404(Author, id=author_id)
+        Book.objects.create(title=title, author=author)
+        return redirect('list_books')
+    authors = Author.objects.all()
+    return render(request, 'relationship_app/add_book.html', {'authors': authors})
+
+@permission_required('bookshelf.change_book', raise_exception=True)
+def edit_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        book.title = request.POST.get('title')
+        author_id = request.POST.get('author')
+        book.author = get_object_or_404(Author, id=author_id)
+        book.save()
+        return redirect('list_books')
+    authors = Author.objects.all()
+    return render(request, 'relationship_app/edit_book.html', {'book': book, 'authors': authors})
+
+@permission_required('bookshelf.delete_book', raise_exception=True)
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        book.delete()
+        return redirect('list_books')
+    return render(request, 'relationship_app/confirm_delete.html', {'book': book})
