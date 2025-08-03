@@ -16,8 +16,8 @@ class CustomUserManager(UserManager):
         user.save(using=self._db)
         return user
 
-class CustomUser(AbstractUser):
-    date_of_birth = models.DateField(blank=True, null=True)
-    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+#class CustomUser(AbstractUser):
+#    date_of_birth = models.DateField(blank=True, null=True)
+#    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
-    objects = CustomUserManager()
+#    objects = CustomUserManager()
