@@ -1,5 +1,11 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser
+
+
+class CustomUser(AbstractUser):
+    date_of_birth = models.DateField(blank=True, null=True)
+    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
 class Author(models.Model):
     name = models.CharField(max_length=100)
