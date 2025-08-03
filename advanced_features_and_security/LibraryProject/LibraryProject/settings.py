@@ -99,7 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+               'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -144,6 +144,18 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
+# ===========================
+# HTTPS Enforcement and HSTS
+# ===========================
+
+# Redirect all HTTP requests to HTTPS for secure communication
+SECURE_SSL_REDIRECT = True  # Forces all non-HTTPS requests to redirect to HTTPS
+
+# HTTP Strict Transport Security (HSTS) settings
+SECURE_HSTS_SECONDS = 31536000  # Ensures browsers access the site over HTTPS for one year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Applies HSTS to all subdomains
+SECURE_HSTS_PRELOAD = True  # Allows site to be included in browsers' HSTS preload list
+
 # ========================
 # Content Security Policy (CSP)
 # ========================
@@ -161,4 +173,6 @@ CSP_CONNECT_SRC = ("'self'",)
 # - CSRF and session cookies are only sent over HTTPS
 # - XSS and clickjacking protection enabled
 # - CSP headers restrict content sources to self (mitigates XSS)
+# - HTTPS enforced via SECURE_SSL_REDIRECT
+# - HSTS headers instruct browsers to only use HTTPS (including subdomains and preload)
 # ========================
