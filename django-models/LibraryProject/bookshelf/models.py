@@ -3,7 +3,7 @@ from django.db import models
 class Author(models.Model):
     name = models.CharField(max_length=100)
 
-    def __str__(self):
+    def _str_(self):
         return self.name
 
 class Book(models.Model):
@@ -17,7 +17,6 @@ class Book(models.Model):
             ("can_change_book", "Can change book"),
             ("can_delete_book", "Can delete book"),
         ]
-    
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.title} by {self.author} ({self.publication_year})"
