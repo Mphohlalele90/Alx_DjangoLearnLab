@@ -2,26 +2,32 @@ from rest_framework import generics, permissions
 from .models import Book
 from .serializers import BookSerializer
 
-# List all books or create a new book
-class BookListCreateView(generics.ListCreateAPIView):
+# ListView for retrieving all books
+class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [permissions.AllowAny]  # Anyone can view
 
-    # Only authenticated users can create, anyone can list
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
-
-# Retrieve, update, or delete a book by ID
-class BookRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+# DetailView for retrieving a single book by ID
+class BookDetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [permissions.AllowAny]  # Anyone can view
 
-    # Only authenticated users can update/delete, anyone can retrieve
-    def get_permissions(self):
-        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
+# CreateView for adding a new book
+class BookCreateView(generics.CreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Auth required
 
-    # You can also add more customizations here (e.g., custom validation or filtering)
+# UpdateView for modifying an existing book
+class BookUpdateView(generics.UpdateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Auth required
+
+# DeleteView for removing a book
+class BookDeleteView(generics.DestroyAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Auth required
