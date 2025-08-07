@@ -25,7 +25,7 @@ class BookAPITests(APITestCase):
 
     def test_create_book_authenticated(self):
         self.authenticate()
-        url = reverse('book-list')
+        url = reverse('book-create')
         data = {
             "title": "New Book",
             "author": "Jane Smith",
@@ -39,7 +39,7 @@ class BookAPITests(APITestCase):
         self.assertTrue(Book.objects.filter(title="New Book").exists())
 
     def test_create_book_unauthenticated(self):
-        url = reverse('book-list')
+        url = reverse('book-create')
         data = {
             "title": "Unauth Book",
             "author": "No One",
@@ -58,7 +58,7 @@ class BookAPITests(APITestCase):
 
     def test_update_book(self):
         self.authenticate()
-        url = reverse('book-detail', args=[self.book.id])
+        url = reverse('book-update', args=[self.book.id])
         data = {**self.book_data, "title": "Updated Book"}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -68,7 +68,7 @@ class BookAPITests(APITestCase):
 
     def test_delete_book(self):
         self.authenticate()
-        url = reverse('book-detail', args=[self.book.id])
+        url = reverse('book-delete', args=[self.book.id])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Book.objects.filter(id=self.book.id).exists())
@@ -97,15 +97,12 @@ class BookAPITests(APITestCase):
 
     def test_permission_enforced(self):
         # Attempt to update without authentication
-        url = reverse('book-detail', args=[self.book.id])
+        url_update = reverse('book-update', args=[self.book.id])
         data = {**self.book_data, "title": "Should Not Update"}
-        response = self.client.put(url, data, format='json')
+        response = self.client.put(url_update, data, format='json')
         self.assertIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
 
         # Attempt to delete without authentication
-        response = self.client.delete(url)
+        url_delete = reverse('book-delete', args=[self.book.id])
+        response = self.client.delete(url_delete)
         self.assertIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
-        
-        from django.test import TestCase
-
-
