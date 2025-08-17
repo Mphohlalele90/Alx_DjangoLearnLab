@@ -14,4 +14,62 @@
         </p>
         <div class="content">{{ post.content|linebreaks }}</div>
     </article>
+
+    <!-- Comments Section -->
+    <section class="comments mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    Comments
+                    <span class="badge bg-secondary">{{ post.comments.count }}</span>
+                </h3>
+
+                <!-- Comment Form -->
+                {% if user.is_authenticated %}
+                    <form method="POST" class="mb-4">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <textarea name="content" class="form-control" rows="3" 
+                                      placeholder="Share your thoughts..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-info">
+                        <a href="{% url 'login' %}?next={% url 'post-detail' post.pk %}">Log in</a> to leave a comment
+                    </div>
+                {% endif %}
+
+                <!-- Comments List -->
+                <div class="comments-list">
+                    {% for comment in post.comments.all %}
+                        {% if comment.approved or comment.author == user %}
+                        <div class="comment mb-3 p-3 {% if not comment.approved %}bg-light{% endif %}">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ comment.author.username }}</strong>
+                                <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                            </div>
+                            <p class="mt-2 mb-1">{{ comment.content }}</p>
+                            
+                            {% if user == comment.author %}
+                                <div class="comment-actions mt-2">
+                                    <a href="{% url 'comment-update' comment.pk %}" 
+                                       class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a href="{% url 'comment-delete' comment.pk %}" 
+                                       class="btn btn-sm btn-outline-danger">Delete</a>
+                                </div>
+                            {% endif %}
+                            
+                            {% if not comment.approved and user == post.author %}
+                                <span class="badge bg-warning text-dark mt-2">Pending approval</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% empty %}
+                        <p class="text-muted">No comments yet. Be the first to comment!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

@@ -1,9 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Profile, Post
+from .models import Profile, Post, Comment
 
-# Existing authentication forms (unchanged)
+# User Authentication Forms
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
     
@@ -23,7 +23,7 @@ class ProfileUpdateForm(forms.ModelForm):
         model = Profile
         fields = ['bio', 'profile_pic', 'website_url']
 
-# New form for blog post CRUD operations
+# Blog Post Forms
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
@@ -46,7 +46,22 @@ class PostForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Make the featured image field not required
         self.fields['featured_image'].required = False
-        # Set a more user-friendly label for the status field
         self.fields['status'].label = 'Post Status'
+
+# Comment Form
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Write your comment here...'
+            }),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['content'].label = ''  # Remove the label for cleaner look

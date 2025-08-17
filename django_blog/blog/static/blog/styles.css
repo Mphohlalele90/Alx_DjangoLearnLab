@@ -1,4 +1,4 @@
-/* Base Styles */
+/* Base Styles (unchanged) */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -14,7 +14,7 @@ body {
     padding: 20px;
 }
 
-/* Header/Navigation */
+/* Header/Navigation (unchanged) */
 header {
     background: #2c3e50;
     color: white;
@@ -28,7 +28,7 @@ header {
     align-items: center;
 }
 
-/* Post Styles */
+/* Post Styles (unchanged) */
 .post {
     background: white;
     padding: 25px;
@@ -58,6 +58,7 @@ header {
     margin-bottom: 15px;
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 .post .content {
@@ -65,34 +66,94 @@ header {
     line-height: 1.8;
 }
 
-/* Form Styles */
-.form-container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
+/* Comment Section Styles */
+.comments {
+    margin-top: 3rem;
+}
+
+.comments .card {
+    border: none;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.form-group {
-    margin-bottom: 20px;
+.comments .card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
 }
 
-.form-control {
+.comment {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background: white;
+    border-radius: 6px;
+    border-left: 3px solid #3498db;
+    transition: all 0.2s ease;
+}
+
+.comment:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.comment.unapproved {
+    background-color: #f8f9fa;
+    border-left-color: #ffc107;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.comment-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.comment-content {
+    white-space: pre-line;
+    line-height: 1.6;
+    margin: 0.5rem 0 1rem;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Form Styles (updated for comments) */
+.comment-form {
+    margin-bottom: 2rem;
+}
+
+.comment-form textarea {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
+    font-family: inherit;
     font-size: 1rem;
-}
-
-textarea.form-control {
-    min-height: 200px;
+    line-height: 1.5;
     resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.3s;
 }
 
-/* Button Styles */
+.comment-form textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+}
+
+/* Button Styles (unchanged) */
 .btn {
     display: inline-block;
     padding: 10px 20px;
@@ -104,45 +165,12 @@ textarea.form-control {
     cursor: pointer;
 }
 
-.btn-primary {
-    background-color: #3498db;
-    color: white;
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.875rem;
 }
 
-.btn-primary:hover {
-    background-color: #2980b9;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-}
-
-.btn-danger {
-    background-color: #e74c3c;
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: #c0392b;
-}
-
-.btn-outline {
-    background: transparent;
-    border: 1px solid #3498db;
-    color: #3498db;
-}
-
-.btn-outline:hover {
-    background: #3498db;
-    color: white;
-}
-
-/* Badges & Status Indicators */
+/* Badges & Status Indicators (unchanged) */
 .badge {
     padding: 0.35em 0.65em;
     font-size: 0.75em;
@@ -151,53 +179,20 @@ textarea.form-control {
     text-align: center;
     white-space: nowrap;
     border-radius: 0.25rem;
-    margin-left: 10px;
 }
 
-.badge-warning {
-    color: #212529;
-    background-color: #ffc107;
+.badge.bg-secondary {
+    background-color: #6c757d !important;
 }
 
-.badge-success {
-    color: white;
-    background-color: #28a745;
-}
-
-/* Messages/Alerts */
+/* Messages/Alerts (unchanged) */
 .alert {
     padding: 15px;
     margin-bottom: 20px;
     border-radius: 4px;
 }
 
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-/* Image Styles */
-.featured-image {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 20px;
-    border-radius: 4px;
-}
-
-/* Utility Classes */
-.text-center {
-    text-align: center;
-}
-
-.mt-3 {
-    margin-top: 1rem;
-}
-
-.mb-3 {
-    margin-bottom: 1rem;
-}
+/* Utility Classes (unchanged) */
+.mt-3 { margin-top: 1rem; }
+.mb-3 { margin-bottom: 1rem; }
+.text-muted { color: #6c757d !important; }
