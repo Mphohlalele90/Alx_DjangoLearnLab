@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
+from taggit.managers import TaggableManager  # New import for tagging
 
 class Profile(models.Model):
     """Extended user profile model"""
@@ -58,6 +59,8 @@ class Post(models.Model):
         blank=True,
         null=True
     )
+    # Add tags field
+    tags = TaggableManager(blank=True)
 
     class Meta:
         ordering = ['-published_date']

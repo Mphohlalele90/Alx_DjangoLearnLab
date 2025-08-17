@@ -64,4 +64,4 @@ class CommentForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['content'].label = ''  # Remove the label for cleaner look
+        self.fields['content'].label = ''  

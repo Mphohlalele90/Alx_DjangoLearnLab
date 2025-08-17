@@ -12,6 +12,7 @@ from django.views.generic import (
 )
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
+from django.db.models import Q  # For search functionality
 from .models import Post, Comment
 from .forms import (
     RegisterForm, 
@@ -73,7 +74,7 @@ def profile_view(request):
     }
     return render(request, 'blog/profile.html', context)
 
-# Blog Post CRUD Views (unchanged)
+# Blog Post CRUD Views with added tag functionality
 class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
@@ -82,7 +83,20 @@ class PostListView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        return Post.objects.filter(status='published')
+        queryset = Post.objects.filter(status='published')
+        
+        # Handle tag filtering
+        tag = self.request.GET.get('tag')
+        if tag:
+            queryset = queryset.filter(tags__name__in=[tag])
+            
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add popular tags to context
+        context['popular_tags'] = Post.tags.most_common()[:10]
+        return context
 
 class PostDetailView(DetailView):
     model = Post
@@ -131,7 +145,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         messages.success(request, 'Your post has been deleted!')
         return super().delete(request, *args, **kwargs)
 
-# Comment CRUD Views
+# Comment CRUD Views (unchanged)
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
@@ -177,7 +191,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         messages.success(request, 'Your comment has been deleted!')
         return super().delete(request, *args, **kwargs)
 
-# Comment handling in PostDetailView
+# Comment handling in PostDetailView (unchanged)
 @login_required
 def add_comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -190,3 +204,32 @@ def add_comment(request, pk):
             comment.save()
             messages.success(request, 'Your comment has been added!')
     return redirect('post-detail', pk=post.pk)
+
+# New search functionality
+def search_posts(request):
+    query = request.GET.get('q')
+    if query:
+        posts = Post.objects.filter(
+            Q(title__icontains=query) | 
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct().order_by('-published_date')
+    else:
+        posts = Post.objects.none()
+    
+    context = {
+        'posts': posts,
+        'query': query,
+        'popular_tags': Post.tags.most_common()[:10]
+    }
+    return render(request, 'blog/search_results.html', context)
+
+# New tag view
+def posts_by_tag(request, tag):
+    posts = Post.objects.filter(tags__name__in=[tag]).order_by('-published_date')
+    context = {
+        'posts': posts,
+        'tag': tag,
+        'popular_tags': Post.tags.most_common()[:10]
+    }
+    return render(request, 'blog/posts_by_tag.html', context)
