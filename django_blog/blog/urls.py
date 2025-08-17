@@ -27,11 +27,8 @@ urlpatterns = [
     path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post-update'),
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
     
-    # Comment URLs (new)
-    path('post/<int:pk>/comment/', CommentCreateView.as_view(), name='comment-create'),
+    # Comment URLs (updated to match required pattern)
+    path('post/<int:pk>/comments/new/', CommentCreateView.as_view(), name='comment-create'),
     path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='comment-update'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
-    
-    # Comment form handler (new)
-    path('post/<int:pk>/add_comment/', views.add_comment, name='add-comment'),
 ]
