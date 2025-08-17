@@ -1,7 +1,7 @@
-from django import forms
+frfrom django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from taggit.forms import TagField, TagWidget  # New imports for tagging
+from taggit.forms import TagField, TagWidget  # Make sure TagWidget is imported
 from .models import Profile, Post, Comment
 
 # User Authentication Forms (unchanged)
@@ -24,14 +24,15 @@ class ProfileUpdateForm(forms.ModelForm):
         model = Profile
         fields = ['bio', 'profile_pic', 'website_url']
 
-# Updated Blog Post Form with Tagging
+# Updated Blog Post Form with explicit TagWidget usage
 class PostForm(forms.ModelForm):
     tags = TagField(
-        required=False,
         widget=TagWidget(attrs={
             'class': 'form-control',
-            'placeholder': 'Add comma-separated tags'
-        })
+            'placeholder': 'Add tags (comma separated)'
+        }),
+        required=False,
+        help_text="Enter comma-separated tags"
     )
 
     class Meta:
@@ -48,9 +49,7 @@ class PostForm(forms.ModelForm):
                 'placeholder': 'Write your post content here...'
             }),
             'status': forms.Select(attrs={'class': 'form-control'}),
-        }
-        labels = {
-            'featured_image': 'Featured Image (optional)'
+            'featured_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
     
     def __init__(self, *args, **kwargs):
