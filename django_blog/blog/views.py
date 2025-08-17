@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -7,12 +7,19 @@ from django.views.generic import (
     DetailView, 
     CreateView, 
     UpdateView, 
-    DeleteView
+    DeleteView,
+    FormView
 )
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
-from .models import Post
-from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm, PostForm
+from .models import Post, Comment
+from .forms import (
+    RegisterForm, 
+    UserUpdateForm, 
+    ProfileUpdateForm, 
+    PostForm, 
+    CommentForm
+)
 
 # Existing authentication views (unchanged)
 def register_view(request):
@@ -66,7 +73,7 @@ def profile_view(request):
     }
     return render(request, 'blog/profile.html', context)
 
-# New blog post CRUD views
+# Blog Post CRUD Views (unchanged)
 class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
@@ -80,6 +87,12 @@ class PostListView(ListView):
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comment_form'] = CommentForm()
+        context['comments'] = self.object.comments.filter(approved=True)
+        return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -117,3 +130,63 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'Your post has been deleted!')
         return super().delete(request, *args, **kwargs)
+
+# Comment CRUD Views
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/post_detail.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        messages.success(self.request, 'Your comment has been posted!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.kwargs['pk']})
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Your comment has been updated!')
+        return super().form_valid(form)
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.object.post.pk})
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.object.post.pk})
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Your comment has been deleted!')
+        return super().delete(request, *args, **kwargs)
+
+# Comment handling in PostDetailView
+@login_required
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            messages.success(request, 'Your comment has been added!')
+    return redirect('post-detail', pk=post.pk)
