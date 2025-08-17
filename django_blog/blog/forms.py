@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from taggit.forms import TagField, TagWidget  # New imports for tagging
 from .models import Profile, Post, Comment
 
-# User Authentication Forms
+# User Authentication Forms (unchanged)
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
     
@@ -23,11 +24,19 @@ class ProfileUpdateForm(forms.ModelForm):
         model = Profile
         fields = ['bio', 'profile_pic', 'website_url']
 
-# Blog Post Forms
+# Updated Blog Post Form with Tagging
 class PostForm(forms.ModelForm):
+    tags = TagField(
+        required=False,
+        widget=TagWidget(attrs={
+            'class': 'form-control',
+            'placeholder': 'Add comma-separated tags'
+        })
+    )
+
     class Meta:
         model = Post
-        fields = ['title', 'content', 'status', 'featured_image']
+        fields = ['title', 'content', 'status', 'featured_image', 'tags']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -49,7 +58,7 @@ class PostForm(forms.ModelForm):
         self.fields['featured_image'].required = False
         self.fields['status'].label = 'Post Status'
 
-# Comment Form
+# Comment Form (unchanged)
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
@@ -64,4 +73,4 @@ class CommentForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['content'].label = ''  
+        self.fields['content'].label = ''
