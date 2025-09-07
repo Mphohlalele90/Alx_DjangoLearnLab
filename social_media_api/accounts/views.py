@@ -1,6 +1,6 @@
 from rest_framework import status, generics
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import permissions  # Add this import
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import login
@@ -12,7 +12,7 @@ from .models import CustomUser
 User = get_user_model()
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([permissions.AllowAny])  # Change to permissions.AllowAny
 def register_user(request):
     serializer = UserRegistrationSerializer(data=request.data)
     if serializer.is_valid():
@@ -26,7 +26,7 @@ def register_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([permissions.AllowAny])  # Change to permissions.AllowAny
 def user_login(request):
     serializer = UserLoginSerializer(data=request.data)
     if serializer.is_valid():
@@ -41,7 +41,7 @@ def user_login(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])  # Change to permissions.IsAuthenticated
 def user_profile(request):
     if request.method == 'GET':
         serializer = UserProfileSerializer(request.user)
@@ -56,7 +56,7 @@ def user_profile(request):
 # ADD CLASS-BASED VIEWS FOR FOLLOW FUNCTIONALITY
 
 class FollowUserView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]  # Use permissions.IsAuthenticated
     
     def post(self, request):
         from .serializers import FollowSerializer
@@ -86,7 +86,7 @@ class FollowUserView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UnfollowUserView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]  # Use permissions.IsAuthenticated
     
     def post(self, request):
         from .serializers import FollowSerializer
@@ -111,7 +111,7 @@ class UnfollowUserView(generics.GenericAPIView):
 
 # KEEP THE ORIGINAL FUNCTION-BASED VIEWS FOR COMPATIBILITY
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])  # Change to permissions.IsAuthenticated
 def follow_user(request):
     from .serializers import FollowSerializer
     
@@ -140,7 +140,7 @@ def follow_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])  # Change to permissions.IsAuthenticated
 def unfollow_user(request):
     from .serializers import FollowSerializer
     
@@ -163,7 +163,7 @@ def unfollow_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])  # Change to permissions.IsAuthenticated
 def user_profile_with_follow_info(request, user_id):
     from .serializers import UserProfileWithFollowInfoSerializer
     
@@ -172,7 +172,7 @@ def user_profile_with_follow_info(request, user_id):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])  # Change to permissions.IsAuthenticated
 def following_list(request):
     from .serializers import UserProfileWithFollowInfoSerializer
     
@@ -183,7 +183,7 @@ def following_list(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])  # Change to permissions.IsAuthenticated
 def followers_list(request):
     from .serializers import UserProfileWithFollowInfoSerializer
     
