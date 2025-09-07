@@ -4,8 +4,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import login
+from django.contrib.auth import get_user_model
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer
-from .models import CustomUser
+
+User = get_user_model()
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -13,7 +15,7 @@ def register_user(request):
     serializer = UserRegistrationSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        token, created = Token.objects.get_or_create(user=user)
+        token = Token.objects.get(user=user)  # Get the token that was created in serializer
         return Response({
             'token': token.key,
             'user_id': user.id,
