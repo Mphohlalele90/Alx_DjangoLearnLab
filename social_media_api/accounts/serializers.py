@@ -13,7 +13,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'password', 'bio', 'profile_picture')
     
     def create(self, validated_data):
-        # Use get_user_model().objects.create_user as required by checker
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email', ''),
@@ -21,7 +20,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             bio=validated_data.get('bio', ''),
             profile_picture=validated_data.get('profile_picture', None)
         )
-        # Create token for the user as required by checker
         Token.objects.create(user=user)
         return user
 
@@ -61,3 +59,31 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     def get_following_count(self, obj):
         return obj.following.count()
+
+# ADD THESE NEW SERIALIZERS FOR FOLLOW FUNCTIONALITY
+
+class FollowSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+
+class UserProfileWithFollowInfoSerializer(serializers.ModelSerializer):
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    is_following = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'bio', 'profile_picture', 
+                 'followers_count', 'following_count', 'is_following')
+        read_only_fields = ('id', 'username', 'email')
+    
+    def get_followers_count(self, obj):
+        return obj.get_followers_count()
+    
+    def get_following_count(self, obj):
+        return obj.get_following_count()
+    
+    def get_is_following(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return request.user.is_following(obj)
+        return False
